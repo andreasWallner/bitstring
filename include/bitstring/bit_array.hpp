@@ -52,7 +52,6 @@ public:
   bit_array& append(std::string_view);
 
   // void prepend(const bit_array &b);
-  // void append(const bit_array &b);
   // front
   // back
   // substr

@@ -216,9 +216,28 @@ SCENARIO("init from string") {
     }
   }
 
+  GIVEN("string with seperators") {
+    const std::string s{"0b1'00101'101_011"};
+    WHEN("constructing bit_array") {
+      auto dut = bitstring::bit_array(s);
+      THEN("must be parsed correctly") {
+        REQUIRE(dut == bitstring::bit_array("0b100101101011"));
+      }
+    }
+  }
+
   GIVEN("string with invalid prefix") {
     const std::string s{"0e010100101010"};
-    WHEN("constructing bit_array from is") {
+    WHEN("constructing bit_array from it") {
+      THEN("parse_error must be thrown") {
+        REQUIRE_THROWS_AS(bitstring::bit_array(s), bitstring::parse_error);
+      }
+    }
+  }
+
+  GIVEN("string with invalid characters") {
+    const std::string s{"0b11010121001"};
+    WHEN("constructing bit_array from it") {
       THEN("parse_error must be thrown") {
         REQUIRE_THROWS_AS(bitstring::bit_array(s), bitstring::parse_error);
       }

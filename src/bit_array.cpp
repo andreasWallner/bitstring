@@ -13,6 +13,12 @@ bit_array::bit_array(std::string_view s) : bitcnt_(0) {
     storage_type e = 0;
     unsigned bits = 0;
     for (auto c : s.substr(2)) {
+      if (c == '\'' || c == '_')
+        continue;
+
+      if (c != '0' && c != '1')
+        throw parse_error("invalid character in bitstring");
+
       e |= (c - '0') << bits++;
       if (bits == sizeof(storage_type) * 8) {
         bitcnt_ += bits;
