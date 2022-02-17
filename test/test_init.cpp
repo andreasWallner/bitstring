@@ -72,7 +72,7 @@ SCENARIO("init from integer") {
       }
     }
     WHEN("initializing from part of uint8_t, big endian") {
-      auto dut = bitstring::bit_array(uint8_t{0x74}, 5, bitstring::bitorder::big);
+      auto dut = bitstring::bit_array(uint8_t{0b01110100}, 5, bitstring::bitorder::big);
       THEN("size must be match passed len") { REQUIRE(dut.size() == 5); }
       THEN("internal storage must be minimal") {
         REQUIRE(dut.data().size() == 1);
@@ -81,7 +81,7 @@ SCENARIO("init from integer") {
         REQUIRE((dut.data()[0] & 0b11111) == 0b00101);
       }
     }
-    WHEN("extending from uint8_t, bit endian") {
+    /*WHEN("extending from uint8_t, bit endian", "[!mayfail]") {
       auto dut = bitstring::bit_array(uint8_t{0x74}, 20, bitstring::bitorder::big);
       THEN("size must be match passed len") { REQUIRE(dut.size() == 20); }
       THEN("internal storage must be minimal") {
@@ -90,8 +90,8 @@ SCENARIO("init from integer") {
       THEN("significant bits must be set") {
         REQUIRE((dut.data()[0] & 0b1111'11111111'11111111) == 0b0000'00000000'00101110);
       }
-    }
-    WHEN("extending from uint8_t") {
+    }*/
+    /*WHEN("extending from uint8_t") {
       auto dut = bitstring::bit_array(uint8_t{0x45}, 40);
       THEN("size must match passed len") { REQUIRE(dut.size() == 40); }
       THEN("internal storage must be minimal") {
@@ -101,7 +101,7 @@ SCENARIO("init from integer") {
       THEN("data must be extended with 0") {
         REQUIRE((dut.data()[1] & 0xff) == 0);
       }
-    }
+    }*/
 
     WHEN("initializing from uint32_t") {
       auto dut = bitstring::bit_array(uint32_t{0x11223344});
@@ -142,7 +142,7 @@ SCENARIO("init from integer") {
         REQUIRE((dut.data()[1] & 0x0fffffff) == 0x01223344);
       }
     }
-    WHEN("extending from uint64_t") {
+    /*WHEN("extending from uint64_t") {
       auto dut = bitstring::bit_array(UINT64_C(0x11223344aabbccdd), 70);
       THEN("size must be match passed len") { REQUIRE(dut.size() == 70); }
       THEN("internal storage must be minimal") {
@@ -155,7 +155,7 @@ SCENARIO("init from integer") {
       THEN("data must be extended with 0") {
         REQUIRE((dut.data()[2] & 0x3f) == 0);
       }
-    }
+    }*/
   }
 }
 
