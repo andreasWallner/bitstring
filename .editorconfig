@@ -1,0 +1,21 @@
+root = true
+
+[*]
+indent_style = space
+end_of_line = lf
+charset = utf-8
+
+[*.{c,cpp,h,hpp}]
+indent_size = 2
+insert_final_newline = true
+
+[CMakeLists.txt]
+insert_final_newline = true
+
+[/extern/*/**]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+indent_style = unset
+indent_size = unset
