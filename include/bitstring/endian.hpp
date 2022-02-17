@@ -4,7 +4,7 @@
 #include <cstdint>
 
 namespace bitstring {
-enum class bitorder { little, big };
+enum class bitorder { lsb_first, msb_first };
 
 namespace detail {
 template <typename T> struct half_type {};

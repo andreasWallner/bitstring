@@ -28,12 +28,12 @@ public:
             std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T> &&
                                  !std::is_same_v<T, bool>,
                              int> = 0>
-  bit_array(T, bitorder bio = bitorder::little);
+  bit_array(T, bitorder bio = bitorder::lsb_first);
   template <typename T,
             std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T> &&
                                  !std::is_same_v<T, bool>,
                              int> = 0>
-  bit_array(T, size_t len, bitorder bio = bitorder::little);
+  bit_array(T, size_t len, bitorder bio = bitorder::lsb_first);
   // TODO int constructor with template parameters?
   // TODO more constexpr?
 
@@ -106,11 +106,11 @@ template <typename T,
           std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T> &&
                                !std::is_same_v<T, bool>,
                            int>>
-bit_array::bit_array(T v, size_t bits, bitorder bio /* = little */)
+bit_array::bit_array(T v, size_t bits, bitorder bio /* = lsb_first */)
     : bits_(storage_units(bits), storage_type{0}), bitcnt_(bits) {
   if (bits > (8 * sizeof(T)))
     return; // not implemented yet - more to think
-  if (bio == bitorder::big) {
+  if (bio == bitorder::msb_first) {
     v = detail::bitflipped(v);
     v >>= 8 * sizeof(T) - bits;
   }
