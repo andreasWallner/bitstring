@@ -4,6 +4,16 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+SCENARIO("default constructor") {
+  GIVEN("no preconditions") {
+    WHEN("using default constructor") {
+      auto dut = bitstring::bit_array();
+      THEN("must yield empty bitstring") { REQUIRE(dut.size() == 0); }
+      THEN("string conversion must be empty") { REQUIRE(dut.bin() == ""); }
+    }
+  }
+}
+
 SCENARIO("init from binary data") {
   GIVEN("no precondition") {
     WHEN("constructing with short vector (< storage type)") {
@@ -72,7 +82,8 @@ SCENARIO("init from integer") {
       }
     }
     WHEN("initializing from part of uint8_t, big endian") {
-      auto dut = bitstring::bit_array(uint8_t{0b01110100}, 5, bitstring::bitorder::big);
+      auto dut = bitstring::bit_array(uint8_t{0b01110100}, 5,
+                                      bitstring::bitorder::big);
       THEN("size must be match passed len") { REQUIRE(dut.size() == 5); }
       THEN("internal storage must be minimal") {
         REQUIRE(dut.data().size() == 1);
@@ -82,13 +93,14 @@ SCENARIO("init from integer") {
       }
     }
     /*WHEN("extending from uint8_t, bit endian", "[!mayfail]") {
-      auto dut = bitstring::bit_array(uint8_t{0x74}, 20, bitstring::bitorder::big);
-      THEN("size must be match passed len") { REQUIRE(dut.size() == 20); }
-      THEN("internal storage must be minimal") {
+      auto dut = bitstring::bit_array(uint8_t{0x74}, 20,
+    bitstring::bitorder::big); THEN("size must be match passed len") {
+    REQUIRE(dut.size() == 20); } THEN("internal storage must be minimal") {
         REQUIRE(dut.data().size() == 1);
       }
       THEN("significant bits must be set") {
-        REQUIRE((dut.data()[0] & 0b1111'11111111'11111111) == 0b0000'00000000'00101110);
+        REQUIRE((dut.data()[0] & 0b1111'11111111'11111111) ==
+    0b0000'00000000'00101110);
       }
     }*/
     /*WHEN("extending from uint8_t") {
@@ -112,12 +124,15 @@ SCENARIO("init from integer") {
       THEN("data must be set") { REQUIRE(dut.data()[0] == 0x11223344); }
     }
     WHEN("initializing from uint32_t, big endian") {
-      auto dut = bitstring::bit_array(uint32_t{0x11223344}, bitstring::bitorder::big);
+      auto dut =
+          bitstring::bit_array(uint32_t{0x11223344}, bitstring::bitorder::big);
       THEN("size must be 32") { REQUIRE(dut.size() == 32); }
       THEN("internal storage must be minimal") {
         REQUIRE(dut.data().size() == 1);
       }
-      THEN("data must be set") { REQUIRE(dut.data()[0] == 0b00100010'11001100'01000100'10001000); }
+      THEN("data must be set") {
+        REQUIRE(dut.data()[0] == 0b00100010'11001100'01000100'10001000);
+      }
     }
 
     WHEN("initializing from uint64_t") {

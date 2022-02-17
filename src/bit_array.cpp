@@ -5,6 +5,8 @@
 
 namespace bitstring {
 
+bit_array::bit_array() : bitcnt_(0) {}
+
 bit_array::bit_array(std::string_view s) : bitcnt_(0) {
   if (s.substr(0, 2) == "0b") {
     bits_.reserve(storage_units(s.size() - 2));
@@ -88,11 +90,11 @@ bit_array &bit_array::append(const bit_array &b) {
   const auto needed_size = storage_units(bitcnt_ + b.bitcnt_);
   bits_.resize(needed_size);
 
-  for(size_t ib = 0; ib < b.bitcnt_; ib++) {
+  for (size_t ib = 0; ib < b.bitcnt_; ib++) {
     auto [this_offset, this_idx] = split_index(bitcnt_ + ib);
     bits_[this_idx] |= b[ib] << this_offset;
   }
-  
+
   // modify bitcnt_ only now such that self appending works
   bitcnt_ += b.bitcnt_;
   return *this;
