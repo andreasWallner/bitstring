@@ -1,5 +1,6 @@
 #include "bitstring/bit_array.hpp"
 #include "bitstring/exceptions.hpp"
+#include "bitstring/literals.hpp"
 #include "util.hpp"
 
 #include <catch2/catch_test_macros.hpp>
@@ -175,6 +176,23 @@ SCENARIO("init from integer") {
 }
 
 SCENARIO("init from string") {
+  GIVEN("short binary string") {
+    const std::string s{"0b101101"};
+    WHEN("constructing bit_array") {
+      auto dut = bitstring::bit_array(s);
+      THEN("must be parsed correctly") {
+        REQUIRE(dut == bitstring::bit_array(0b101101U, 6));
+      }
+    }
+    WHEN("using UDL to construct bit_array") {
+      using namespace bitstring::literals;
+      auto dut = "0b101101"_ba;
+      THEN("must be parsed like normal init") {
+        REQUIRE(dut == bitstring::bit_array(0b101101U, 6));
+      }
+    }
+  }
+
   GIVEN("string with 1 whole storage unit") {
     static_assert(sizeof(bitstring::bit_array::storage_type) == 4);
     const std::string s{"0b"

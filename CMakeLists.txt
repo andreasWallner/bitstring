@@ -8,7 +8,9 @@ target_sources(andreasWallner_bitstring
     include/bitstring.hpp
     include/bitstring/bit_array.hpp
     include/bitstring/endian.hpp
+    include/bitstring/literals.hpp
     src/bit_array.cpp
+    src/literals.cpp
 )
 target_include_directories(andreasWallner_bitstring
   PUBLIC
