@@ -26,6 +26,7 @@ add_executable(test_bitstring
   test/test_format.cpp
   test/test_comparison.cpp
   test/test_endian.cpp
+  test/test_modify.cpp
 )
 add_test(andreasWallner_bitstring test_bitstring)
 target_link_libraries(test_bitstring andreasWallner_bitstring Catch2::Catch2WithMain fmt::fmt)

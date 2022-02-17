@@ -66,6 +66,11 @@ bool bit_array::operator!=(const bit_array &other) const {
   return !(*this == other);
 }
 
+uint8_t bit_array::operator[](const bitoffset_t idx) const {
+  auto [offset, word] = split_index(idx);
+  return static_cast<uint8_t>((bits_[word] >> offset) & 1);
+}
+
 std::size_t bit_array::size() const { return bitcnt_; }
 
 std::string bit_array::bin() const {
@@ -77,6 +82,24 @@ std::string bit_array::bin() const {
     }
   }
   return ret;
+}
+
+bit_array &bit_array::append(const bit_array &b) {
+  const auto needed_size = storage_units(bitcnt_ + b.bitcnt_);
+  bits_.resize(needed_size);
+
+  for(size_t ib = 0; ib < b.bitcnt_; ib++) {
+    auto [this_offset, this_idx] = split_index(bitcnt_ + ib);
+    bits_[this_idx] |= b[ib] << this_offset;
+  }
+  
+  // modify bitcnt_ only now such that self appending works
+  bitcnt_ += b.bitcnt_;
+  return *this;
+}
+
+bit_array &bit_array::append(std::string_view s) {
+  return this->append(bit_array(s)); // to the trivial route for now
 }
 
 const std::vector<bit_array::storage_type> &bit_array::data() const {

@@ -14,6 +14,7 @@ namespace bitstring {
 class bit_array {
 public:
   using storage_type = std::uint32_t;
+  using bitoffset_t = std::size_t;
 
 private:
   std::vector<storage_type> bits_;
@@ -38,12 +39,17 @@ public:
 
   bool operator==(const bit_array &other) const;
   bool operator!=(const bit_array &other) const;
+  uint8_t operator[](bitoffset_t) const;
+  // TODO: bitproxy operator[](bitoffset_t);
 
   size_t size() const;
 
   std::string bin() const;
   std::string hex() const;
   template <typename T> T as_int(bitorder /*, byteorder*/) const;
+
+  bit_array& append(const bit_array& b);
+  bit_array& append(std::string_view);
 
   // void prepend(const bit_array &b);
   // void append(const bit_array &b);
@@ -103,14 +109,15 @@ template <typename T,
                            int>>
 bit_array::bit_array(T v, size_t bits, bitorder bio /* = little */)
     : bits_(storage_units(bits), storage_type{0}), bitcnt_(bits) {
-    if (bio == bitorder::big)
-      v = detail::bitflipped(v);
+  if (bits > (8 * sizeof(T)))
+    return; // not implemented yet - more to think
+  if (bio == bitorder::big) {
+    v = detail::bitflipped(v);
+    v >>= 8 * sizeof(T) - bits;
+  }
   for (size_t i = 0; i < storage_units<T>(1); i++) {
     // TODO: think about UB in the shift
     auto unit = static_cast<storage_type>(v >> (sizeof(storage_type) * i * 8));
-    if (bio == bitorder::big && bits < (8 * sizeof(storage_type)))
-      unit >>= 8 * sizeof(storage_type) - bits;
-
     bits_[i] = unit;
   }
 }
