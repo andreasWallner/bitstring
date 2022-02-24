@@ -114,4 +114,18 @@ const std::vector<bit_array::storage_type> &bit_array::data() const {
   return bits_;
 }
 
+bit_array operator*(size_t cnt, const bit_array &ba) {
+  bit_array result;
+  while (cnt--)
+    result.append(ba);
+  return result;
+}
+bit_array operator*(const bit_array &ba, size_t cnt) { return cnt * ba; }
+bit_array operator+(const bit_array &left, const bit_array &right) {
+  bit_array result;
+  result.append(left);
+  result.append(right);
+  return result;
+}
+
 } // namespace bitstring

@@ -22,8 +22,8 @@ private:
 
 public:
   bit_array();
-  bit_array(std::string_view);
-  bit_array(std::vector<uint8_t>);
+  explicit bit_array(std::string_view);
+  explicit bit_array(std::vector<uint8_t>);
   template <typename T,
             std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T> &&
                                  !std::is_same_v<T, bool>,
@@ -48,8 +48,8 @@ public:
   std::string hex() const;
   template <typename T> T as_int(bitorder /*, byteorder*/) const;
 
-  bit_array& append(const bit_array& b);
-  bit_array& append(std::string_view);
+  bit_array &append(const bit_array &b);
+  bit_array &append(std::string_view);
 
   // void prepend(const bit_array &b);
   // front
@@ -120,6 +120,10 @@ bit_array::bit_array(T v, size_t bits, bitorder bio /* = lsb_first */)
     bits_[i] = unit;
   }
 }
+
+bit_array operator*(size_t cnt, const bit_array &ba);
+bit_array operator*(const bit_array &ba, size_t cnt);
+bit_array operator+(const bit_array &left, const bit_array &right);
 
 } // namespace bitstring
 
