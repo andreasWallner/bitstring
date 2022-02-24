@@ -74,12 +74,16 @@ bool bit_array::operator!=(const bit_array &other) const {
   return !(*this == other);
 }
 
-uint8_t bit_array::operator[](const bitoffset_t idx) const {
+uint8_t bit_array::operator[](const bitcnt_t idx) const {
   auto [offset, word] = split_index(idx);
   return static_cast<uint8_t>((bits_[word] >> offset) & 1);
 }
 
 std::size_t bit_array::size() const { return bitcnt_; }
+
+void bit_array::reserve(bitcnt_t cnt) {
+  bits_.reserve(storage_units(cnt));
+}
 
 std::string bit_array::bin() const {
   auto ret = std::string(bitcnt_, '0');
