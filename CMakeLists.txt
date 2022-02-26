@@ -9,6 +9,7 @@ project(bitstring CXX)
 option(BITSTRING_ENABLE_TESTS "Build & register bitstring unittests" ${BITSTRING_ROOT_PROJECT})
 
 include(cmake/CompilerWarnings.cmake)
+include(cmake/DefaultSettings.cmake)
 
 add_library(bitstring "")
 add_library(bitstring::bitstring ALIAS bitstring)

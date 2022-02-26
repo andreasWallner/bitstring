@@ -1,3 +1,4 @@
+# SPDX-Identifier: MIT
 # based on https://github.com/lefticus/cpp_starter_project/blob/master/cmake/CompilerWarnings.cmake
 # but: do not be infectious with warnings (PUBLIC vs. PRIVATE; see https://www.foonathan.net/2018/10/cmake-warnings/)
 
