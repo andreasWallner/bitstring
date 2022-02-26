@@ -11,7 +11,7 @@ bit_array::bit_array(std::string_view s) : bitcnt_(0) {
   if (s.substr(0, 2) == "0b") {
     bits_.reserve(storage_units(s.size() - 2));
     storage_type e = 0;
-    unsigned bits = 0;
+    unsigned int bits = 0;
     for (auto c : s.substr(2)) {
       if (c == '\'' || c == '_')
         continue;
@@ -19,7 +19,7 @@ bit_array::bit_array(std::string_view s) : bitcnt_(0) {
       if (c != '0' && c != '1')
         throw parse_error("invalid character in bitstring");
 
-      e |= (c - '0') << bits++;
+      e |= static_cast<uint8_t>((c - '0') << bits++);
       if (bits == sizeof(storage_type) * 8) {
         bitcnt_ += bits;
         bits_.push_back(e);
@@ -98,7 +98,7 @@ bit_array &bit_array::append(const bit_array &b) {
 
   for (size_t ib = 0; ib < b.bitcnt_; ib++) {
     auto [this_offset, this_idx] = split_index(bitcnt_ + ib);
-    bits_[this_idx] |= b[ib] << this_offset;
+    bits_[this_idx] |= static_cast<uint8_t>(b[ib] << this_offset);
   }
 
   // modify bitcnt_ only now such that self appending works

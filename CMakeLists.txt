@@ -6,12 +6,14 @@ endif()
 
 project(bitstring CXX)
 
-option(BITSTRING_ENABLE_TESTING "Build & register bitstring unittests" ${BITSTRING_ROOT_PROJECT})
+option(BITSTRING_ENABLE_TESTS "Build & register bitstring unittests" ${BITSTRING_ROOT_PROJECT})
+
+include(cmake/CompilerWarnings.cmake)
 
 add_library(bitstring "")
 add_library(bitstring::bitstring ALIAS bitstring)
 target_sources(bitstring
-  PUBLIC
+  PRIVATE
     include/bitstring.hpp
     include/bitstring/bit_array.hpp
     include/bitstring/endian.hpp
@@ -20,14 +22,18 @@ target_sources(bitstring
     src/literals.cpp
 )
 target_include_directories(bitstring
-  PUBLIC
+  PRIVATE
+    include
+)
+target_include_directories(bitstring
+  SYSTEM INTERFACE
     $<INSTALL_INTERFACE:include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 target_compile_features(bitstring PUBLIC cxx_std_17)
-get_target_property(PP bitstring SOURCES)
+target_set_warnings(bitstring)
 
-if(BITSTRING_ENABLE_TESTING)
+if(BITSTRING_ENABLE_TESTS)
   include(cmake/CPM.cmake)
   CPMAddPackage("gh:catchorg/Catch2@3.0.0-preview4")
   CPMAddPackage("gh:fmtlib/fmt#8.1.1")

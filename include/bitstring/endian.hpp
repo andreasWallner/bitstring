@@ -16,9 +16,12 @@ template <typename T> using half_type_t = typename half_type<T>::type;
 template <typename T> constexpr T bitflipped(T v) noexcept;
 
 template <> constexpr uint8_t bitflipped<uint8_t>(uint8_t v) noexcept {
-  v = ((v & 0b10101010) >> 1) | ((v & 0b01010101) << 1); // 12345678 => 21436587
-  v = ((v & 0b11001100) >> 2) | ((v & 0b00110011) << 2); //          => 43218765
-  v = ((v & 0b11110000) >> 4) | ((v & 0b00001111) << 4); //          => 87654321
+  v = static_cast<uint8_t>(((v & 0b10101010) >> 1) |
+                           ((v & 0b01010101) << 1)); // 12345678 => 21436587
+  v = static_cast<uint8_t>(((v & 0b11001100) >> 2) |
+                           ((v & 0b00110011) << 2)); //          => 43218765
+  v = static_cast<uint8_t>(((v & 0b11110000) >> 4) |
+                           ((v & 0b00001111) << 4)); //          => 87654321
   return v;
 }
 
