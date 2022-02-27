@@ -81,12 +81,14 @@ bool bit_array::operator!=(const bit_array &other) const {
   return !(*this == other);
 }
 
-uint8_t bit_array::operator[](const bitoffset_t idx) const {
+uint8_t bit_array::operator[](const bitcnt_t idx) const {
   auto [offset, word] = split_index(idx);
   return static_cast<uint8_t>((bits_[word] >> offset) & 1);
 }
 
 std::size_t bit_array::size() const { return bitcnt_; }
+
+void bit_array::reserve(bitcnt_t cnt) { bits_.reserve(storage_units(cnt)); }
 
 std::string bit_array::bin() const {
   auto ret = std::string(bitcnt_, '0');
@@ -119,6 +121,23 @@ bit_array &bit_array::append(std::string_view s) {
 
 const std::vector<bit_array::storage_type> &bit_array::data() const {
   return bits_;
+}
+
+bit_array operator*(size_t cnt, const bit_array &ba) {
+  bit_array result;
+  result.reserve(cnt * ba.size());
+  while (cnt--)
+    result.append(ba);
+  return result;
+}
+
+bit_array operator*(const bit_array &ba, size_t cnt) { return cnt * ba; }
+
+bit_array operator+(const bit_array &left, const bit_array &right) {
+  bit_array result;
+  result.append(left);
+  result.append(right);
+  return result;
 }
 
 } // namespace bitstring

@@ -14,7 +14,7 @@ namespace bitstring {
 class bit_array {
 public:
   using storage_type = std::uint32_t;
-  using bitoffset_t = std::size_t;
+  using bitcnt_t = std::size_t;
 
 private:
   std::vector<storage_type> bits_;
@@ -22,8 +22,8 @@ private:
 
 public:
   bit_array();
-  bit_array(std::string_view);
-  bit_array(std::vector<uint8_t>);
+  explicit bit_array(std::string_view);
+  explicit bit_array(std::vector<uint8_t>);
   template <typename T,
             std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T> &&
                                  !std::is_same_v<T, bool>,
@@ -39,17 +39,18 @@ public:
 
   bool operator==(const bit_array &other) const;
   bool operator!=(const bit_array &other) const;
-  uint8_t operator[](bitoffset_t) const;
-  // TODO: bitproxy operator[](bitoffset_t);
+  uint8_t operator[](bitcnt_t) const;
+  // TODO: bitproxy operator[](bitcnt_t);
 
   size_t size() const;
+  void reserve(bitcnt_t bitcnt);
 
   std::string bin() const;
   std::string hex() const;
   template <typename T> T as_int(bitorder /*, byteorder*/) const;
 
-  bit_array& append(const bit_array& b);
-  bit_array& append(std::string_view);
+  bit_array &append(const bit_array &b);
+  bit_array &append(std::string_view);
 
   // void prepend(const bit_array &b);
   // front
@@ -120,6 +121,10 @@ bit_array::bit_array(T v, size_t bits, bitorder bio /* = lsb_first */)
     bits_[i] = unit;
   }
 }
+
+bit_array operator*(size_t cnt, const bit_array &ba);
+bit_array operator*(const bit_array &ba, size_t cnt);
+bit_array operator+(const bit_array &left, const bit_array &right);
 
 } // namespace bitstring
 
