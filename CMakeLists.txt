@@ -10,6 +10,7 @@ option(BITSTRING_ENABLE_TESTS "Build & register bitstring unittests" ${BITSTRING
 
 include(cmake/CompilerWarnings.cmake)
 include(cmake/DefaultSettings.cmake)
+include(cmake/StaticAnalyzers.cmake)
 
 add_library(bitstring "")
 add_library(bitstring::bitstring ALIAS bitstring)
@@ -33,9 +34,11 @@ target_include_directories(bitstring
 )
 target_compile_features(bitstring PUBLIC cxx_std_17)
 target_set_warnings(bitstring)
+target_enable_clang_tidy(bitstring BITSTRING_CLANG_TIDY)
 
 if(BITSTRING_ENABLE_TESTS)
   include(cmake/CPM.cmake)
+  set(FETCHCONTENT_UPDATES_DISCONNECTED  TRUE)
   CPMAddPackage("gh:catchorg/Catch2@3.0.0-preview4")
   CPMAddPackage("gh:fmtlib/fmt#8.1.1")
 
@@ -50,5 +53,7 @@ if(BITSTRING_ENABLE_TESTS)
   )
   target_include_directories(test_bitstring PUBLIC src)
   target_link_libraries(test_bitstring bitstring Catch2::Catch2WithMain fmt::fmt)
+  target_set_warnings(test_bitstring)
+  target_enable_clang_tidy(test_bitstring BITSTRING_CLANG_TIDY)
   add_test(bitstring test_bitstring)
 endif()

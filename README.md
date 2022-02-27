@@ -41,3 +41,8 @@ via cmake CPM:
       // print concatenated sequence
       std::cout << packet.bin();
     }
+
+## Development notes
+
+To easily run clang-tidy during the build set `BITSTRING_CLANG_TIDY` to you clang-tidy.
+You can also set it to e.g. `clang-tidy-10;-fix` to automatically apply fixes during the build.

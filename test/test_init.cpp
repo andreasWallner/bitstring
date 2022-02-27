@@ -10,7 +10,7 @@ SCENARIO("default constructor") {
     WHEN("using default constructor") {
       auto dut = bitstring::bit_array();
       THEN("must yield empty bitstring") { REQUIRE(dut.size() == 0); }
-      THEN("string conversion must be empty") { REQUIRE(dut.bin() == ""); }
+      THEN("string conversion must be empty") { REQUIRE(dut.bin() == ""); } // NOLINT
     }
   }
 }

@@ -5,6 +5,8 @@
 
 namespace bitstring {
 
+constexpr int bits_per_byte = 8;
+
 bit_array::bit_array() : bitcnt_(0) {}
 
 bit_array::bit_array(std::string_view s) : bitcnt_(0) {
@@ -13,14 +15,16 @@ bit_array::bit_array(std::string_view s) : bitcnt_(0) {
     storage_type e = 0;
     unsigned int bits = 0;
     for (auto c : s.substr(2)) {
-      if (c == '\'' || c == '_')
+      if (c == '\'' || c == '_') {
         continue;
+      }
 
-      if (c != '0' && c != '1')
+      if (c != '0' && c != '1') {
         throw parse_error("invalid character in bitstring");
+      }
 
       e |= static_cast<uint8_t>((c - '0') << bits++);
-      if (bits == sizeof(storage_type) * 8) {
+      if (bits == sizeof(storage_type) * bits_per_byte) {
         bitcnt_ += bits;
         bits_.push_back(e);
         bits = 0;
@@ -38,31 +42,34 @@ bit_array::bit_array(std::string_view s) : bitcnt_(0) {
 
 bit_array::bit_array(std::vector<uint8_t> vec)
     : bits_((vec.size() + sizeof(storage_type) - 1) / sizeof(storage_type)),
-      bitcnt_(8 * vec.size()) {
+      bitcnt_(bits_per_byte * vec.size()) {
   size_t bits_idx = 0;
   size_t vec_idx = 0;
   for (; bits_idx < vec.size() / sizeof(storage_type); bits_idx++) {
     storage_type e = 0;
     for (size_t j = 0; j < sizeof(storage_type); j++, vec_idx++) {
-      e |= static_cast<storage_type>(vec[vec_idx]) << (j * 8);
+      e |= static_cast<storage_type>(vec[vec_idx]) << (j * bits_per_byte);
     }
     bits_[bits_idx] = e;
   }
   {
     storage_type e = 0;
     for (size_t j = 0; vec_idx < vec.size(); j++, vec_idx++) {
-      e |= static_cast<storage_type>(vec[vec_idx]) << (j * 8);
+      e |= static_cast<storage_type>(vec[vec_idx]) << (j * bits_per_byte);
     }
     bits_[bits_idx] = e;
   }
 }
 
 bool bit_array::operator==(const bit_array &other) const {
-  if (this->size() != other.size())
+  if (this->size() != other.size()) {
     return false;
+  }
 
-  if (!std::equal(begin(this->bits_), end(this->bits_) - 1, begin(other.bits_)))
+  if (!std::equal(begin(this->bits_), end(this->bits_) - 1,
+                  begin(other.bits_))) {
     return false;
+  }
 
   auto const [last_offset, last_index] = split_index(this->size() - 1);
   auto const last_bit = (size_t{1} << last_offset);
@@ -85,7 +92,7 @@ std::string bit_array::bin() const {
   auto ret = std::string(bitcnt_, '0');
   for (size_t i = 0; i < bitcnt_; i++) {
     auto [bitpos, idx] = split_index(i);
-    if (bits_[idx] & (storage_type{1} << bitpos)) {
+    if ((bits_[idx] & (storage_type{1} << bitpos)) != 0U) {
       ret[i] = '1';
     }
   }
