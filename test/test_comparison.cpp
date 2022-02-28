@@ -40,7 +40,8 @@ SCENARIO("comparing bit_arrays") {
     }
   }
   GIVEN("single storage unit, msb differs") {
-    static_assert(sizeof(bitstring::bit_array::storage_type) == sizeof(uint32_t));
+    static_assert(sizeof(bitstring::bit_array::storage_type) ==
+                  sizeof(uint32_t));
     auto a = bitstring::bit_array(uint32_t{0x80000000U});
     auto b = bitstring::bit_array(uint32_t{0x00000000U});
     WHEN("comparing") {
@@ -51,7 +52,8 @@ SCENARIO("comparing bit_arrays") {
     }
   }
   GIVEN("single storage unit, lsb differs") {
-    static_assert(sizeof(bitstring::bit_array::storage_type) == sizeof(uint32_t));
+    static_assert(sizeof(bitstring::bit_array::storage_type) ==
+                  sizeof(uint32_t));
     auto a = bitstring::bit_array(uint32_t{0x00000000U});
     auto b = bitstring::bit_array(uint32_t{0x00000008U});
     WHEN("comparing") {
