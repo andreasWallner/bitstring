@@ -88,6 +88,8 @@ uint8_t bit_array::operator[](const bitcnt_t idx) const {
 
 std::size_t bit_array::size() const { return bitcnt_; }
 
+bool bit_array::empty() const { return bitcnt_ == 0; }
+
 void bit_array::reserve(bitcnt_t cnt) { bits_.reserve(storage_units(cnt)); }
 
 std::string bit_array::bin() const {
@@ -126,8 +128,9 @@ const std::vector<bit_array::storage_type> &bit_array::data() const {
 bit_array operator*(size_t cnt, const bit_array &ba) {
   bit_array result;
   result.reserve(cnt * ba.size());
-  while (cnt--)
+  while (cnt-- > 0) {
     result.append(ba);
+  }
   return result;
 }
 

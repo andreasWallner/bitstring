@@ -43,6 +43,7 @@ public:
   // TODO: bitproxy operator[](bitcnt_t);
 
   size_t size() const;
+  bool empty() const;
   void reserve(bitcnt_t bitcnt);
 
   std::string bin() const;

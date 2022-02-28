@@ -5,12 +5,13 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-SCENARIO("default constructor") {
+SCENARIO("default initialization") {
   GIVEN("no preconditions") {
     WHEN("using default constructor") {
       auto dut = bitstring::bit_array();
-      THEN("must yield empty bitstring") { REQUIRE(dut.size() == 0); }
-      THEN("string conversion must be empty") { REQUIRE(dut.bin() == ""); } // NOLINT
+      THEN("must be shown as empty") { REQUIRE(dut.empty()); }
+      THEN("size must be 0") { REQUIRE(dut.size() == 0); } // NOLINT
+      THEN("string conversion must be empty") { REQUIRE(dut.bin().empty()); }
     }
   }
 }
@@ -27,6 +28,7 @@ SCENARIO("init from binary data") {
         REQUIRE(dut.data().size() == 1);
         REQUIRE(dut.data()[0] == 0xbbaa);
       }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
     WHEN("constructing with vector (= storage_type size)") {
       static_assert(sizeof(bitstring::bit_array::storage_type) == 4);
@@ -38,6 +40,7 @@ SCENARIO("init from binary data") {
         REQUIRE(dut.data().size() == 1);
         REQUIRE(dut.data()[0] == 0x44332211);
       }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
 
     WHEN("constructing with long vector (> storage_type size)") {
@@ -53,6 +56,7 @@ SCENARIO("init from binary data") {
         REQUIRE(dut.data()[1] == 0x22334455);
         REQUIRE(dut.data()[2] == 0x11);
       }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
   }
 }
@@ -66,11 +70,14 @@ SCENARIO("init from integer") {
         REQUIRE(dut.data().size() == 1);
       }
       THEN("data must be set") { REQUIRE(dut.data()[0] == 0b01000101); }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
     WHEN("initializing from uint8_t, big endian") {
-      auto dut = bitstring::bit_array(uint8_t{0x45}, bitstring::bitorder::msb_first);
+      auto dut =
+          bitstring::bit_array(uint8_t{0x45}, bitstring::bitorder::msb_first);
       THEN("size must be 8") { REQUIRE(dut.size() == 8); }
       THEN("data must be set") { REQUIRE(dut.data()[0] == 0b10100010); }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
     WHEN("initializing from part of uint8_t") {
       auto dut = bitstring::bit_array(uint8_t{0x54}, 5);
@@ -81,6 +88,7 @@ SCENARIO("init from integer") {
       THEN("significant bits must be set") {
         REQUIRE((dut.data()[0] & 0b11111) == 0x14);
       }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
     WHEN("initializing from part of uint8_t, big endian") {
       auto dut = bitstring::bit_array(uint8_t{0b01110100}, 5,
@@ -92,6 +100,7 @@ SCENARIO("init from integer") {
       THEN("significant bits must be set") {
         REQUIRE((dut.data()[0] & 0b11111) == 0b00101);
       }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
     /*WHEN("extending from uint8_t, bit endian", "[!mayfail]") {
       auto dut = bitstring::bit_array(uint8_t{0x74}, 20,
@@ -123,10 +132,11 @@ SCENARIO("init from integer") {
         REQUIRE(dut.data().size() == 1);
       }
       THEN("data must be set") { REQUIRE(dut.data()[0] == 0x11223344); }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
     WHEN("initializing from uint32_t, big endian") {
-      auto dut =
-          bitstring::bit_array(uint32_t{0x11223344}, bitstring::bitorder::msb_first);
+      auto dut = bitstring::bit_array(uint32_t{0x11223344},
+                                      bitstring::bitorder::msb_first);
       THEN("size must be 32") { REQUIRE(dut.size() == 32); }
       THEN("internal storage must be minimal") {
         REQUIRE(dut.data().size() == 1);
@@ -134,6 +144,7 @@ SCENARIO("init from integer") {
       THEN("data must be set") {
         REQUIRE(dut.data()[0] == 0b00100010'11001100'01000100'10001000);
       }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
 
     WHEN("initializing from uint64_t") {
@@ -146,6 +157,7 @@ SCENARIO("init from integer") {
         REQUIRE(dut.data()[0] == 0xaabbccdd);
         REQUIRE(dut.data()[1] == 0x11223344);
       }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
     WHEN("initializing from part of uint64_t") {
       auto dut = bitstring::bit_array(UINT64_C(0x11223344aabbccdd), 60);
@@ -157,6 +169,7 @@ SCENARIO("init from integer") {
         REQUIRE(dut.data()[0] == 0xaabbccdd);
         REQUIRE((dut.data()[1] & 0x0fffffff) == 0x01223344);
       }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
     /*WHEN("extending from uint64_t") {
       auto dut = bitstring::bit_array(UINT64_C(0x11223344aabbccdd), 70);
@@ -183,6 +196,7 @@ SCENARIO("init from string") {
       THEN("must be parsed correctly") {
         REQUIRE(dut == bitstring::bit_array(0b101101U, 6));
       }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
     WHEN("using UDL to construct bit_array") {
       using namespace bitstring::literals;
@@ -190,6 +204,7 @@ SCENARIO("init from string") {
       THEN("must be parsed like normal init") {
         REQUIRE(dut == bitstring::bit_array(0b101101U, 6));
       }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
   }
 
@@ -206,6 +221,7 @@ SCENARIO("init from string") {
         REQUIRE(dut == bitstring::bit_array(
                            0b01001100'11010101'11100011'11001001U, 32));
       }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
   }
 
@@ -231,6 +247,7 @@ SCENARIO("init from string") {
         auto b = bitstring::bit_array(expected);
         REQUIRE(dut == bitstring::bit_array(expected));
       }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
   }
 
@@ -241,6 +258,7 @@ SCENARIO("init from string") {
       THEN("must be parsed correctly") {
         REQUIRE(dut == bitstring::bit_array("0b100101101011"));
       }
+      THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
   }
 
