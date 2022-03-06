@@ -12,10 +12,16 @@ SCENARIO("appending to bit array") {
       THEN("value at [1] must be correct") { REQUIRE(dut[1] == 0); }
       THEN("value at [7] must be correct") { REQUIRE(dut[7] == 0); }
     }
-    WHEN("appending") {
+    WHEN("appending some bits") {
       dut.append("0b101101001");
       THEN("data must be appended correctly") {
         REQUIRE(dut == bitstring::bit_array("0b1011010101101001"));
+      }
+    }
+    WHEN("appending empty bitvector") {
+      dut.append(bitstring::bit_array(0U, 0));
+      THEN("bitvector must be unmodified") {
+        REQUIRE(dut == bitstring::bit_array("0b1011010"));
       }
     }
   }

@@ -102,6 +102,19 @@ SCENARIO("init from integer") {
       }
       THEN("bit_array must not be empty") { REQUIRE_FALSE(dut.empty()); }
     }
+    WHEN("initializing from 0 bits of uint8_t") {
+      auto dut = bitstring::bit_array(uint8_t{0xff}, 0);
+      THEN("length must be 0") { REQUIRE(dut.size() == 0); } // NOLINT
+      THEN("must report as empty") { REQUIRE(dut.empty()); }
+      THEN("must print as empty string") { REQUIRE(dut.bin() == ""); } // NOLINT
+    }
+    WHEN("initializing from 0 bits of uint8_t, big endian") {
+      auto dut = bitstring::bit_array(uint8_t{0xff}, 0,
+                                      bitstring::bitorder::msb_first);
+      THEN("length must be 0") { REQUIRE(dut.size() == 0); } // NOLINT
+      THEN("must report as empty") { REQUIRE(dut.empty()); }
+      THEN("must print as empty string") { REQUIRE(dut.bin() == ""); } // NOLINT
+    }
     /*WHEN("extending from uint8_t, bit endian", "[!mayfail]") {
       auto dut = bitstring::bit_array(uint8_t{0x74}, 20,
     bitstring::bitorder::big); THEN("size must be match passed len") {

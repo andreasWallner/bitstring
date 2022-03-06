@@ -110,6 +110,8 @@ template <typename T,
                            int>>
 bit_array::bit_array(T v, size_t bits, bitorder bio /* = lsb_first */)
     : bits_(storage_units(bits), storage_type{0}), bitcnt_(bits) {
+  if (bits == 0)
+    return;
   if (bits > (8 * sizeof(T)))
     return; // not implemented yet - more to think
   if (bio == bitorder::msb_first) {
