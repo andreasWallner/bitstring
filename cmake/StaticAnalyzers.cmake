@@ -1,5 +1,5 @@
 # SPDX-Identifier: MIT
-# inspired by ...
+# inspired by https://github.com/cpp-best-practices/project_options/blob/main/src/StaticAnalyzers.cmake
 
 function(target_enable_clang_tidy TARGET ANALYZER_VAR_NAME)
   if(NOT TARGET ${TARGET})
