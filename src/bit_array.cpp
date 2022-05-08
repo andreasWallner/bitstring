@@ -2,14 +2,15 @@
 #include "bitstring/exceptions.hpp"
 
 #include <algorithm>
+#include <iostream>
 
 namespace bitstring {
 
 constexpr int bits_per_byte = 8;
 
-bit_array::bit_array() : bitcnt_(0) {}
+bit_array::bit_array() : bitcnt_(0), offset_(0) {}
 
-bit_array::bit_array(std::string_view s) : bitcnt_(0) {
+bit_array::bit_array(std::string_view s) : bitcnt_(0), offset_(0) {
   if (s.substr(0, 2) == "0b") {
     bits_.reserve(storage_units(s.size() - 2));
     storage_type e = 0;
@@ -42,7 +43,7 @@ bit_array::bit_array(std::string_view s) : bitcnt_(0) {
 
 bit_array::bit_array(std::vector<uint8_t> vec)
     : bits_((vec.size() + sizeof(storage_type) - 1) / sizeof(storage_type)),
-      bitcnt_(bits_per_byte * vec.size()) {
+      bitcnt_(bits_per_byte * vec.size()), offset_(0) {
   size_t bits_idx = 0;
   size_t vec_idx = 0;
   for (; bits_idx < vec.size() / sizeof(storage_type); bits_idx++) {
@@ -71,10 +72,10 @@ bool bit_array::operator==(const bit_array &other) const {
     return false;
   }
 
-  auto const [last_offset, last_index] = split_index(this->size() - 1);
-  auto const last_bit = (size_t{1} << last_offset);
+  auto const last = detail::bit_index(this->size() - 1);
+  auto const last_bit = (size_t{1} << last.bit_offset());
   auto const mask = (last_bit - 1) | last_bit;
-  return (this->bits_[last_index] & mask) == (other.bits_[last_index] & mask);
+  return (this->bits_[last.unit()] & mask) == (other.bits_[last.unit()] & mask);
 }
 
 bool bit_array::operator!=(const bit_array &other) const {
@@ -82,8 +83,9 @@ bool bit_array::operator!=(const bit_array &other) const {
 }
 
 uint8_t bit_array::operator[](const bitcnt_t idx) const {
-  auto [offset, word] = split_index(idx);
-  return static_cast<uint8_t>((bits_[word] >> offset) & 1);
+  auto split_idx = detail::bit_index(idx);
+  return static_cast<uint8_t>(
+      (bits_[split_idx.unit()] >> split_idx.bit_offset()) & 1);
 }
 
 std::size_t bit_array::size() const { return bitcnt_; }
@@ -95,8 +97,11 @@ void bit_array::reserve(bitcnt_t cnt) { bits_.reserve(storage_units(cnt)); }
 std::string bit_array::bin() const {
   auto ret = std::string(bitcnt_, '0');
   for (size_t i = 0; i < bitcnt_; i++) {
-    auto [bitpos, idx] = split_index(i);
-    if ((bits_[idx] & (storage_type{1} << bitpos)) != 0U) {
+    auto idx = detail::bit_index(i);
+    const auto unit = bits_[idx.unit()];
+    const auto mask = idx.bit_mask();
+    const auto bit = unit & mask;
+    if (bit != 0U) {
       ret[i] = '1';
     }
   }
@@ -108,8 +113,9 @@ bit_array &bit_array::append(const bit_array &b) {
   bits_.resize(needed_size);
 
   for (size_t ib = 0; ib < b.bitcnt_; ib++) {
-    auto [this_offset, this_idx] = split_index(bitcnt_ + ib);
-    bits_[this_idx] |= static_cast<storage_type>(b[ib]) << this_offset;
+    auto this_idx = detail::bit_index(bitcnt_ + ib);
+    bits_[this_idx.unit()] |= static_cast<storage_type>(b[ib])
+                              << this_idx.bit_offset();
   }
 
   // modify bitcnt_ only now such that self appending works
@@ -130,6 +136,24 @@ bool bit_array::starts_with(const bit_array &other) const noexcept {
   }
   return true;
 }
+
+/*bit_array &bit_array::prepend(const bit_array &b) {
+  const auto needed_units = storage_units(b.bitcnt_);
+  bits_.insert(cbegin(bits_), needed_units, storage_type{0});
+  offset_ += needed_units * sizeof(storage_type) - b.bitcnt_;
+
+  for (bitcnt_t i = 0; i < b.bitcnt_; i++) {
+    auto idx = detail::bit_index(i);
+    bits_[idx.unit()] |= static_cast<storage_type>(b[i]) << idx.bit_offset();
+  }
+
+  bitcnt_ += b.bitcnt_;
+  return *this;
+}
+
+bit_array &bit_array::prepend(std::string_view s) {
+  return this->prepend(bit_array(s));
+}*/
 
 const std::vector<bit_array::storage_type> &bit_array::data() const {
   return bits_;

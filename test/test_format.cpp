@@ -5,13 +5,18 @@
 SCENARIO("format binary") {
   GIVEN("clean bit_array") {
     WHEN("formatting") {
-      THEN("bits must be correct") {
+      THEN("full byte must be correct") {
         REQUIRE(bitstring::bit_array(uint8_t{0x45U}).bin() == "10100010");
+      }
+      THEN("cut off byte must be correct") {
         REQUIRE(bitstring::bit_array(0x45U, 7).bin() == "1010001");
+      }
+      THEN("single bit must be correct") {
         REQUIRE(bitstring::bit_array(0x1U, 1).bin() == "1");
-      };
+      }
     }
   }
+
   GIVEN("multi-unit bit array") {
     std::vector<uint8_t> vec{0b10010011, 0b11000111, 0b10101011,
                              0b00110010, 0b00001000, 0b10000100,

@@ -51,6 +51,8 @@ if(BITSTRING_ENABLE_TESTS)
     test/test_endian.cpp
     test/test_modify.cpp
     test/test_operators.cpp
+
+    test/test_bit_index.cpp
   )
   target_include_directories(test_bitstring PUBLIC src)
   target_link_libraries(test_bitstring bitstring Catch2::Catch2WithMain fmt::fmt)
