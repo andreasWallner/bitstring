@@ -27,6 +27,21 @@ SCENARIO("appending to bit array") {
   }
 }
 
+SCENARIO("prepending to bit array") {
+  GIVEN("a bit array") {
+    auto dut = bitstring::bit_array("0b110101001");
+    WHEN("prepending once") {
+      dut.prepend("0b100110");
+      THEN("binary conversion must succeed") {
+        REQUIRE(dut.bin() == "100110110101001");
+      }
+      THEN("data must be prepended correctly") {
+        REQUIRE(dut == bitstring::bit_array("0b100110'110101001"));
+      }
+    }
+  }
+}
+
 SCENARIO("reserving space") {
   GIVEN("a small bit array") {
     auto dut = bitstring::bit_array("0b110101110100011111000111110011111001");

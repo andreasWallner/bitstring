@@ -70,8 +70,8 @@ public:
   // TODO int constructor with template parameters?
   // TODO more constexpr?
 
-  bool operator==(const bit_array &other) const;
-  bool operator!=(const bit_array &other) const;
+  bool operator==(const bit_array &other) const noexcept;
+  bool operator!=(const bit_array &other) const noexcept;
   uint8_t operator[](bitcnt_t) const;
   // TODO: bitproxy operator[](bitcnt_t);
 
@@ -102,6 +102,13 @@ public:
   bool starts_with(const bit_array &b) const noexcept;
 
   const std::vector<storage_type> &data() const;
+
+private:
+  detail::bit_index shifted_idx(bitcnt_t idx) const noexcept {
+    return detail::bit_index(idx + offset_);
+  }
+  bool compare_fast(const bit_array &other) const noexcept;
+  bool compare_slow(const bit_array &other) const noexcept;
 
 public:
   template <typename T>

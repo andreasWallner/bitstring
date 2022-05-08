@@ -62,28 +62,44 @@ bit_array::bit_array(std::vector<uint8_t> vec)
   }
 }
 
-bool bit_array::operator==(const bit_array &other) const {
+bool bit_array::operator==(const bit_array &other) const noexcept {
   if (this->size() != other.size()) {
     return false;
   }
 
+  if (this->offset_ == 0 && other.offset_ == 0) {
+    return compare_fast(other);
+  }
+  return compare_slow(other);
+}
+
+bool bit_array::compare_fast(const bit_array &other) const noexcept {
   if (!std::equal(begin(this->bits_), end(this->bits_) - 1,
                   begin(other.bits_))) {
     return false;
   }
 
-  auto const last = detail::bit_index(this->size() - 1);
+  auto const last = shifted_idx(this->size() - 1);
   auto const last_bit = (size_t{1} << last.bit_offset());
   auto const mask = (last_bit - 1) | last_bit;
   return (this->bits_[last.unit()] & mask) == (other.bits_[last.unit()] & mask);
 }
 
-bool bit_array::operator!=(const bit_array &other) const {
+bool bit_array::compare_slow(const bit_array &other) const noexcept {
+  for (bitcnt_t i = 0; i < size(); i++) {
+    if ((*this)[i] != other[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool bit_array::operator!=(const bit_array &other) const noexcept {
   return !(*this == other);
 }
 
 uint8_t bit_array::operator[](const bitcnt_t idx) const {
-  auto split_idx = detail::bit_index(idx);
+  auto split_idx = shifted_idx(idx);
   return static_cast<uint8_t>(
       (bits_[split_idx.unit()] >> split_idx.bit_offset()) & 1);
 }
@@ -97,7 +113,7 @@ void bit_array::reserve(bitcnt_t cnt) { bits_.reserve(storage_units(cnt)); }
 std::string bit_array::bin() const {
   auto ret = std::string(bitcnt_, '0');
   for (size_t i = 0; i < bitcnt_; i++) {
-    auto idx = detail::bit_index(i);
+    auto idx = shifted_idx(i);
     const auto unit = bits_[idx.unit()];
     const auto mask = idx.bit_mask();
     const auto bit = unit & mask;
@@ -113,7 +129,7 @@ bit_array &bit_array::append(const bit_array &b) {
   bits_.resize(needed_size);
 
   for (size_t ib = 0; ib < b.bitcnt_; ib++) {
-    auto this_idx = detail::bit_index(bitcnt_ + ib);
+    auto this_idx = shifted_idx(bitcnt_ + ib);
     bits_[this_idx.unit()] |= static_cast<storage_type>(b[ib])
                               << this_idx.bit_offset();
   }
@@ -137,13 +153,13 @@ bool bit_array::starts_with(const bit_array &other) const noexcept {
   return true;
 }
 
-/*bit_array &bit_array::prepend(const bit_array &b) {
+bit_array &bit_array::prepend(const bit_array &b) {
   const auto needed_units = storage_units(b.bitcnt_);
   bits_.insert(cbegin(bits_), needed_units, storage_type{0});
-  offset_ += needed_units * sizeof(storage_type) - b.bitcnt_;
+  offset_ += needed_units * sizeof(storage_type) * bits_per_byte - b.bitcnt_;
 
   for (bitcnt_t i = 0; i < b.bitcnt_; i++) {
-    auto idx = detail::bit_index(i);
+    auto idx = shifted_idx(i);
     bits_[idx.unit()] |= static_cast<storage_type>(b[i]) << idx.bit_offset();
   }
 
@@ -153,7 +169,7 @@ bool bit_array::starts_with(const bit_array &other) const noexcept {
 
 bit_array &bit_array::prepend(std::string_view s) {
   return this->prepend(bit_array(s));
-}*/
+}
 
 const std::vector<bit_array::storage_type> &bit_array::data() const {
   return bits_;
