@@ -64,3 +64,21 @@ SCENARIO("comparing bit_arrays") {
     }
   }
 }
+
+TEST_CASE("starts_with") {
+  auto dut = bitstring::bit_array("0b10110001");
+
+  // starting with prefix
+  REQUIRE(dut.starts_with(bitstring::bit_array("0b1011")));
+  // exact match
+  REQUIRE(dut.starts_with(bitstring::bit_array("0b10110001")));
+  // empty always matches
+  REQUIRE(dut.starts_with(bitstring::bit_array()));
+  // first bit mismatch
+  REQUIRE(!dut.starts_with(bitstring::bit_array("0b0011")));
+  // last bit mismatch
+  REQUIRE(!dut.starts_with(bitstring::bit_array("0b1010")));
+  // too long
+  REQUIRE(!dut.starts_with(bitstring::bit_array("0b101100010")));
+  REQUIRE(!dut.starts_with(bitstring::bit_array("0b101100011")));
+}

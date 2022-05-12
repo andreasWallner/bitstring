@@ -118,7 +118,17 @@ bit_array &bit_array::append(const bit_array &b) {
 }
 
 bit_array &bit_array::append(std::string_view s) {
-  return this->append(bit_array(s)); // to the trivial route for now
+  return this->append(bit_array(s)); // do the trivial route for now
+}
+
+bool bit_array::starts_with(const bit_array &other) const noexcept {
+  if (other.size() > size())
+    return false;
+  for (bitcnt_t b = 0; b < other.size(); b++) {
+    if ((*this)[b] != other[b])
+      return false;
+  }
+  return true;
 }
 
 const std::vector<bit_array::storage_type> &bit_array::data() const {
