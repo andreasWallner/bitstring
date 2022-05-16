@@ -144,11 +144,13 @@ bit_array &bit_array::append(std::string_view s) {
 }
 
 bool bit_array::starts_with(const bit_array &other) const noexcept {
-  if (other.size() > size())
+  if (other.size() > size()) {
     return false;
+  }
   for (bitcnt_t b = 0; b < other.size(); b++) {
-    if ((*this)[b] != other[b])
+    if ((*this)[b] != other[b]) {
       return false;
+    }
   }
   return true;
 }

@@ -98,7 +98,7 @@ public:
   // iterate split
   // find
 
-  bool starts_with(const bit_array &b) const noexcept;
+  bool starts_with(const bit_array &other) const noexcept;
 
   const std::vector<storage_type> &data() const;
 
