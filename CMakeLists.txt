@@ -7,6 +7,11 @@ endif()
 project(bitstring CXX)
 
 option(BITSTRING_ENABLE_TESTS "Build & register bitstring unittests" ${BITSTRING_ROOT_PROJECT})
+if(BITSTRING_ROOT_PROJECT)
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
 
 include(cmake/CompilerWarnings.cmake)
 include(cmake/DefaultSettings.cmake)
