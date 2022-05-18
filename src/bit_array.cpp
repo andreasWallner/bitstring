@@ -74,7 +74,8 @@ bool bit_array::operator==(const bit_array &other) const noexcept {
 }
 
 bool bit_array::compare_fast(const bit_array &other) const noexcept {
-  if (!std::equal(begin(this->bits_), end(this->bits_) - 1,
+  if (this->bits_.size() > 1 &&
+      !std::equal(begin(this->bits_), end(this->bits_) - 1,
                   begin(other.bits_))) {
     return false;
   }

@@ -63,6 +63,17 @@ SCENARIO("comparing bit_arrays") {
       }
     }
   }
+  GIVEN("single bit") {
+    auto a = bitstring::bit_array(uint32_t{1}, 1);
+    WHEN("matching other") {
+      auto b = bitstring::bit_array(uint32_t{1}, 1);
+      THEN("comparison must indicate match") { REQUIRE(a == b); }
+    }
+    WHEN("differing other") {
+      auto b = bitstring::bit_array(uint32_t{0}, 1);
+      THEN("comparison must indicate mismatch") { REQUIRE(a != b); }
+    }
+  }
 }
 
 TEST_CASE("starts_with") {
