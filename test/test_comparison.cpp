@@ -74,6 +74,24 @@ SCENARIO("comparing bit_arrays") {
       THEN("comparison must indicate mismatch") { REQUIRE(a != b); }
     }
   }
+  GIVEN("misaligned vectors") {
+    auto a = bitstring::bit_array(std::vector<uint8_t>{0x22, 0x33, 0x44});
+    WHEN("matching other") {
+      auto b = bitstring::bit_array(std::vector<uint8_t>{0x33, 0x44});
+      b.prepend(bitstring::bit_array(uint8_t{0x22}));
+      THEN("comparison must indicate match") { REQUIRE(a == b); }
+    }
+    WHEN("differing other (first bit)") {
+      auto b = bitstring::bit_array(std::vector<uint8_t>{0x33, 0x44});
+      b.prepend(bitstring::bit_array(uint8_t{0xa2}));
+      THEN("comparison must indicate match") { REQUIRE(a != b); }
+    }
+    WHEN("differing other (last bit)") {
+      auto b = bitstring::bit_array(std::vector<uint8_t>{0x33, 0x45});
+      b.prepend(bitstring::bit_array(uint8_t{0x22}));
+      THEN("comparison must indicate match") { REQUIRE(a != b); }
+    }
+  }
 }
 
 TEST_CASE("starts_with") {
