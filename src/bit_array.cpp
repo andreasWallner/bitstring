@@ -109,7 +109,22 @@ std::size_t bit_array::size() const { return bitcnt_; }
 
 bool bit_array::empty() const { return bitcnt_ == 0; }
 
-void bit_array::reserve(bitcnt_t cnt) { bits_.reserve(storage_units(cnt)); }
+bit_array &bit_array::reserve(bitcnt_t cnt) {
+  bits_.reserve(storage_units(cnt));
+  return *this;
+}
+
+bit_array &bit_array::reserve_front(bitcnt_t cnt) {
+  if (cnt < offset_) {
+    return *this;
+  }
+  auto units_needed = storage_units(cnt);
+  std::vector<storage_type> extended(units_needed + bits_.capacity(), 0);
+  std::copy(begin(bits_), end(bits_), begin(extended) + units_needed);
+  swap(bits_, extended);
+  offset_ = sizeof(storage_type) * 8 * units_needed;
+  return *this;
+}
 
 std::string bit_array::bin() const {
   auto ret = std::string(bitcnt_, '0');
@@ -172,6 +187,23 @@ bit_array &bit_array::prepend(const bit_array &b) {
 
 bit_array &bit_array::prepend(std::string_view s) {
   return this->prepend(bit_array(s));
+}
+
+bit_array bit_array::front(bitcnt_t bits) {
+  bit_array other;
+
+  const auto units = static_cast<decltype(bits_)::iterator::difference_type>(
+      storage_units(bits) + (offset_ == 0 ? 0 : 1));
+  const auto source_offset_units =
+      storage_units(offset_) - (offset_ == 0 ? 0 : 1);
+
+  other.bits_.reserve(units);
+  std::copy(begin(bits_) + source_offset_units,
+            begin(bits_) + source_offset_units + units, begin(other.bits_));
+  other.offset_ = offset_;
+  other.bitcnt_ = bits;
+
+  return other;
 }
 
 const std::vector<bit_array::storage_type> &bit_array::data() const {

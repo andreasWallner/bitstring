@@ -77,7 +77,8 @@ public:
 
   size_t size() const;
   bool empty() const;
-  void reserve(bitcnt_t bitcnt);
+  bit_array &reserve(bitcnt_t bitcnt);
+  bit_array &reserve_front(bitcnt_t bitcnt);
 
   std::string bin() const;
   std::string hex() const;
@@ -87,7 +88,8 @@ public:
   bit_array &append(std::string_view);
   bit_array &prepend(const bit_array &b);
   bit_array &prepend(std::string_view);
-  // front
+
+  bit_array front(bitcnt_t bits);
   // back
   // substr
   // insert

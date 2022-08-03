@@ -71,3 +71,70 @@ SCENARIO("reserving space") {
     }
   }
 }
+
+SCENARIO("reserving space at the front") {
+  GIVEN("an aligned bit array") {
+    auto dut = bitstring::bit_array("0b1001");
+    const auto ref = dut;
+    CHECK(dut.data().size() == 1);
+    WHEN("reserving a bit in front") {
+      dut.reserve_front(1);
+      THEN("an empty unit must be added in front") {
+        REQUIRE(dut.data()[0] == 0);
+      }
+      THEN("bit array value must be unchanged") { REQUIRE(dut == ref); }
+    }
+    WHEN("reserving multiple units in front") {
+      dut.reserve_front(3 * 64);
+      THEN("empty units must be added in front") {
+        REQUIRE(dut.data()[0] == 0);
+        REQUIRE(dut.data()[1] == 0);
+      }
+      THEN("bit array value must be unchanged") { REQUIRE(dut == ref); }
+    }
+  }
+  GIVEN("an unaligned bit array") {
+    auto dut = bitstring::bit_array("0b1001");
+    dut.prepend("0b1");
+    const auto ref = dut;
+    WHEN("reserving a bit in front") {
+      dut.reserve_front(1);
+      THEN("no additional space must be added") { REQUIRE(dut.data()[0] != 0); }
+      THEN("bit array value must be unchanged") { REQUIRE(dut == ref); }
+    }
+  }
+}
+
+SCENARIO("extracting bits") {
+  GIVEN("aligned bit array") {
+    auto dut = bitstring::bit_array("0b10010011101000111101");
+    WHEN("getting front bit") {
+      auto extracted = dut.front(1);
+      THEN("result must be single bit array") {
+        REQUIRE(extracted == bitstring::bit_array("0b1"));
+      }
+    }
+    WHEN("getting front 10 bits") {
+      auto extracted = dut.front(10);
+      THEN("result must be first 10 bits of DUT") {
+        REQUIRE(extracted == bitstring::bit_array("0b1001001110"));
+      }
+    }
+  }
+  GIVEN("misalined bit array") {
+    auto dut = bitstring::bit_array("0b101100101001110");
+    dut.prepend(bitstring::bit_array("0b010001"));
+    WHEN("getting front bit") {
+      auto extracted = dut.front(1);
+      THEN("result must be single bit array") {
+        REQUIRE(extracted == bitstring::bit_array("0b0"));
+      }
+    }
+    WHEN("getting front 10 bits") {
+      auto extracted = dut.front(10);
+      THEN("result must be first 10 bits of DUT") {
+        REQUIRE(extracted == bitstring::bit_array("0b0100011011"));
+      }
+    }
+  }
+}
