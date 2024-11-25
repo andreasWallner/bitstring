@@ -140,6 +140,16 @@ std::string bit_array::bin() const {
   return ret;
 }
 
+bit_array &bit_array::append(bool bit) {
+  const auto needed_size = storage_units(bitcnt_ + 1);
+  bits_.resize(needed_size);
+
+  auto idx = shifted_idx(bitcnt_);
+  bits_[idx.unit()] |= static_cast<storage_type>(bit) << idx.bit_offset();
+  bitcnt_++;
+  return *this;
+}
+
 bit_array &bit_array::append(const bit_array &b) {
   const auto needed_size = storage_units(bitcnt_ + b.bitcnt_);
   bits_.resize(needed_size);

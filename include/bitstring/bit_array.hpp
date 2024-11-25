@@ -84,6 +84,7 @@ public:
   std::string hex() const;
   template <typename T> T as_int(bitorder /*, byteorder*/) const;
 
+  bit_array &append(bool bit);
   bit_array &append(const bit_array &b);
   bit_array &append(std::string_view);
   bit_array &prepend(const bit_array &b);
