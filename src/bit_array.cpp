@@ -169,9 +169,11 @@ bit_array &bit_array::append(const bit_array &b) {
   return *this;
 }
 
+#if __cpp_lib_string_view
 bit_array &bit_array::append(std::string_view s) {
   return this->append(bit_array(s)); // do the trivial route for now
 }
+#endif
 
 bool bit_array::starts_with(const bit_array &other) const noexcept {
   if (other.size() > size()) {
@@ -199,9 +201,11 @@ bit_array &bit_array::prepend(const bit_array &b) {
   return *this;
 }
 
+#if __cpp_lib_string_view
 bit_array &bit_array::prepend(std::string_view s) {
   return this->prepend(bit_array(s));
 }
+#endif
 
 bit_array bit_array::front(bitcnt_t bits) {
   bit_array other;

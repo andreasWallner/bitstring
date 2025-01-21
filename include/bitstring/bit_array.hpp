@@ -92,9 +92,11 @@ public:
 
   bit_array &append(bool bit);
   bit_array &append(const bit_array &b);
-  bit_array &append(std::string_view);
   bit_array &prepend(const bit_array &b);
+#ifdef __cpp_lib_string_view
+  bit_array &append(std::string_view);
   bit_array &prepend(std::string_view);
+#endif
 
   bit_array front(bitcnt_t bits);
   // back
