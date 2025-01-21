@@ -10,6 +10,7 @@ constexpr int bits_per_byte = 8;
 
 bit_array::bit_array() : bitcnt_(0), offset_(0) {}
 
+#ifdef __cpp_lib_string_view
 bit_array::bit_array(std::string_view s) : bitcnt_(0), offset_(0) {
   if (s.substr(0, 2) == "0b") {
     bits_.reserve(storage_units(s.size() - 2));
@@ -40,6 +41,7 @@ bit_array::bit_array(std::string_view s) : bitcnt_(0), offset_(0) {
     throw parse_error("invalid literal prefix");
   }
 }
+#endif // __cpp_lib_string_view
 
 bit_array::bit_array(std::vector<uint8_t> vec)
     : bits_((vec.size() + sizeof(storage_type) - 1) / sizeof(storage_type)),

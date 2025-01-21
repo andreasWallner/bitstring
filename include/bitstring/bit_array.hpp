@@ -3,7 +3,9 @@
 
 #include <cstdint>
 #include <string>
+#if __has_include(<string_view>)
 #include <string_view>
+#endif
 #include <type_traits>
 #include <vector>
 
@@ -55,7 +57,9 @@ private:
 
 public:
   bit_array();
+#ifdef __cpp_lib_string_view
   explicit bit_array(std::string_view);
+#endif // __cpp_lib_string_view
   explicit bit_array(std::vector<uint8_t>);
   template <typename T,
             typename std::enable_if<std::is_integral<T>::value &&
