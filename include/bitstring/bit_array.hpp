@@ -58,14 +58,16 @@ public:
   explicit bit_array(std::string_view);
   explicit bit_array(std::vector<uint8_t>);
   template <typename T,
-            std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T> &&
-                                 !std::is_same_v<T, bool>,
-                             int> = 0>
+            typename std::enable_if<std::is_integral<T>::value &&
+                                        std::is_unsigned<T>::value &&
+                                        !std::is_same<T, bool>::value,
+                                    int>::type = 0>
   bit_array(T, bitorder bio = bitorder::lsb_first);
   template <typename T,
-            std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T> &&
-                                 !std::is_same_v<T, bool>,
-                             int> = 0>
+            typename std::enable_if<std::is_integral<T>::value &&
+                                        std::is_unsigned<T>::value &&
+                                        !std::is_same<T, bool>::value,
+                                    int>::type = 0>
   bit_array(T, size_t len, bitorder bio = bitorder::lsb_first);
   // TODO int constructor with template parameters?
   // TODO more constexpr?
@@ -124,16 +126,16 @@ public:
   }
 };
 
-template <typename T,
-          std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T> &&
-                               !std::is_same_v<T, bool>,
-                           int>>
+template <typename T, typename std::enable_if<std::is_integral<T>::value &&
+                                                  std::is_unsigned<T>::value &&
+                                                  !std::is_same<T, bool>::value,
+                                              int>::type>
 bit_array::bit_array(T v, bitorder bio) : bit_array(v, sizeof(v) * 8, bio) {}
 
-template <typename T,
-          std::enable_if_t<std::is_integral_v<T> && std::is_unsigned_v<T> &&
-                               !std::is_same_v<T, bool>,
-                           int>>
+template <typename T, typename std::enable_if<std::is_integral<T>::value &&
+                                                  std::is_unsigned<T>::value &&
+                                                  !std::is_same<T, bool>::value,
+                                              int>::type>
 bit_array::bit_array(T v, size_t bits, bitorder bio /* = lsb_first */)
     : bits_(storage_units(bits), storage_type{0}), bitcnt_(bits), offset_(0) {
   if (bits == 0)

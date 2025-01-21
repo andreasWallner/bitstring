@@ -9,6 +9,6 @@ class parse_error : public std::runtime_error {
   using runtime_error::runtime_error;
 };
 
-}
+} // namespace bitstring
 
 #endif

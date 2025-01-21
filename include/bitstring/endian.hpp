@@ -8,9 +8,15 @@ enum class bitorder { lsb_first, msb_first };
 
 namespace detail {
 template <typename T> struct half_type {};
-template <> struct half_type<uint64_t> { using type = uint32_t; };
-template <> struct half_type<uint32_t> { using type = uint16_t; };
-template <> struct half_type<uint16_t> { using type = uint8_t; };
+template <> struct half_type<uint64_t> {
+  using type = uint32_t;
+};
+template <> struct half_type<uint32_t> {
+  using type = uint16_t;
+};
+template <> struct half_type<uint16_t> {
+  using type = uint8_t;
+};
 template <typename T> using half_type_t = typename half_type<T>::type;
 
 template <typename T> constexpr T bitflipped(T v) noexcept;
